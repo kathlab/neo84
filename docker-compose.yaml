@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  neo84:
+    # user: "${UID}:${GID}" # default user within container
+    image: local/neo84:latest
+    container_name: neo84
+    command: /miniconda/envs/neo84/bin/jupyter notebook --allow-root --port=8888 --ip 0.0.0.0 --no-browser
+    # command: /bin/sh -c "while sleep 1000; do :; done" # keep container open while running
+    # command: bash
+    # stdin_open: true
+    # tty: true
+    ports: # Host:Container
+      - "8888:8888" # Jupyter Notebook
+      - "8889:8889" # Jupyter Notebook
+    volumes:
+      - type: bind
+        source: ./notebooks
+        target: /notebooks
+      - type: bind
+        source: ./
+        target: /workspaces/neo84 # vscode workspace folder
+
+      # store vscode extensions to avoid to reinstall every time the container is created anew
+      - type: bind
+        source: ./vscode-container-ext/.vscode-server
+        target: /home/vscode/.vscode-server
+      - type: bind
+        source: ./vscode-container-ext/.vscode-server-insiders
+        target: /home/vscode/.vscode-server-insiders

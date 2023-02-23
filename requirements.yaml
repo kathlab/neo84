@@ -1,0 +1,12 @@
+channels:
+  - conda-forge
+  - defaults # anaconda
+dependencies:
+  - conda-forge::ncurses # fixes: libtinfo.so.6: no version information available (required by bash)
+  - ipykernel # vscode jupyter notebook
+  - ipython # vscode jupyter notebook
+  - notebook # jupyter notebook
+  - pandas # vscode
+  - python>=3.10.9
+  - pip
+  # - pip:
