@@ -2,7 +2,7 @@
 FROM ubuntu:jammy
 
 # args
-ARG PROJECT="jupyter-notebook"
+ARG PROJECT="neo84"
 ARG PACKAGES="git mc htop neovim git"
 
 ARG CONDADIR="/miniconda"
