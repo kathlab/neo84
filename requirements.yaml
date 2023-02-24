@@ -8,5 +8,6 @@ dependencies:
   - notebook # jupyter notebook
   - pandas # vscode
   - python>=3.10.9
+  - pyyaml
   - pip
   # - pip:

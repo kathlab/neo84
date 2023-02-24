@@ -19,7 +19,7 @@ class Package(IntEnum):
     encryption = 10, # unused, don't care
     disks = 11, # doesn't change, don't care
     options = 12, # doesn't change, don't care
-    installer = 13, # copy to target list, important
+    installer = 13, # setup installer files, don't care
     product = 14, # doesn't change, don't care
     set_product = 15, # file install list
     reg_uninstall = 16, # doesn't change, don't care
@@ -39,10 +39,10 @@ class Setup_inf():
         self.__meta_data = {
             '[SetupInfo]': '',
             'Author': 'Mr. Nobody', # your name
-            'CreationDate': '', # 
+            'CreationDate': '', # DD.MM.YYYY
             'InventoryID': '', # ???
             'Description': '', # comment
-            'Method': '', # ???
+            'Method': 'neo84', # package creation method [MSI, ???]
             'Tested on': 'Windows 10', # OS, eg. Windows 10
             'Dependencies': '', # don't care
             'Command line options': '', # don't care
@@ -70,6 +70,13 @@ class Setup_inf():
         
         self.__inf.append(self.__setup)
 
+        # requirements
+        self.__requirements = {
+            '[Requirements]': ''
+        }
+
+        self.__inf.append(self.__requirements)
+
         # application
         self.__application = {
             '[Application]': '',
@@ -85,17 +92,17 @@ class Setup_inf():
             'BackgroundColor': 'EFEFEF,000000',
             'CopyDialogRect': '0%, 0%, 100%, 100%, HCENTER VCENTER',
             '; Register all installations in common registry key': '',
-            'UserKeyName': '$Matrix42Packages$\%DeveloperName%\%ProductName%',
-            'MachineKeyName': '$Matrix42Packages$\%DeveloperName%\%ProductName%\%Version%',
-            'UninstallKeyName': 'Matrix42 - %DeveloperName% %ProductName% %Version%',
-            'UninstallDisplayName': 'Matrix42 - %DeveloperName% %ProductName% %Version%',
+            'UserKeyName': r'$Matrix42Packages$\%DeveloperName%\%ProductName%',
+            'MachineKeyName': r'$Matrix42Packages$\%DeveloperName%\%ProductName%\%Version%',
+            'UninstallKeyName': r'Matrix42 - %DeveloperName% %ProductName% %Version%',
+            'UninstallDisplayName': r'Matrix42 - %DeveloperName% %ProductName% %Version%',
             'UninstallString': '%ReinstallString% /U',
-            'ReinstallString': '"%CommonSetupDir%\Setup.exe' '%App%\%SetupInfDir%\Setup.inf"',
-            '; UninstallDisplayIcon': '"%ApplicationDir%\%SetupInfDir%\Setup.ico",0',
+            'ReinstallString': r'"%CommonSetupDir%\Setup.exe' '%App%\%SetupInfDir%\Setup.inf"',
+            '; UninstallDisplayIcon': r'"%ApplicationDir%\%SetupInfDir%\Setup.ico",0',
             'UninstallOptions': 'NOREMOVE NOREPAIR NOMODIFY',
             'ReinstallMode': '1',
             'SrcDir': '..',
-            'ApplicationDir': '%ProgramFilesDir%\%ProductName%',
+            'ApplicationDir': r'%ProgramFilesDir%\%ProductName%',
             'SetupInfDir': 'Install',
             'DataDir': '%Personal%',
             'AskUninstallOld': '1',
@@ -113,7 +120,7 @@ class Setup_inf():
             'AbortAfterCallTimeOut': '1',
             'DisableCancelButton': '1',
             'ShowEndMessage': '1',
-            'EndMessage': '%EndMessageDesc%',
+            'EndMessage': r'%EndMessageDesc%',
         }
 
         self.__inf.append(self.__application)
@@ -146,8 +153,23 @@ class Setup_inf():
 
         self.__inf.append(self.__m42_install_en)
 
+        self.__m42_user_de = {
+            '[SysStrings:07]': '',
+            'Users': 'Benutzer',
+        }
+
+        self.__inf.append(self.__m42_user_de)
+
+        self.__m42_user_en = {
+            '[SysStrings:09]': '',
+            'Users': 'Users',
+        }
+
+        self.__inf.append(self.__m42_user_en)
+
         self.__environment = {
-            'CommonSetupDir': '%CommonFilesDir%\Setup%SetupBits%',
+            '[Environment]': '',
+            'CommonSetupDir': r'%CommonFilesDir%\Setup%SetupBits%',
             'V_MachineValuesPath': r'\\%EmpirumServer%\Values$\MachineValues\%DomainName%',
             'V_UserValuesPath': r'%HKLM,"Software\matrix42\Software Depot","HomeServer"%\Values$\UserValues\%UserDomain%',
         }
@@ -220,11 +242,11 @@ class Setup_inf():
 
         self.__inf.append(self.__set_product)
 
-        self.reg_uninstall = {
+        self.__reg_uninstall = {
             '[Reg:OnUninstallProduct]': '',
         }
 
-        self.__inf.append(self.reg_uninstall)
+        self.__inf.append(self.__reg_uninstall)
 
         self.__reg_product = {
             '[Reg:Product]': '',
@@ -261,6 +283,8 @@ class Setup_inf():
             # PATH >MY_PATH
             # PATH >C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6\bin
         }
+
+        self.__inf.append(self.__autoexec_bat_product)
     
     @property
     def inf(self):
