@@ -11,10 +11,14 @@ class Neo84_task():
             'date': '',
             'os': '',
             'build': '',
-            'matrix42_diff_dir': '',
+            'matrix42_diff_dir': '', # path to Matrix42 temp data including Diff/
             'app_vendor': '',
             'app_version': '',
             'package_base_dir': '',
+            'use_reg_whitelist': False,
+            'use_dir_file_whitelist': False,
+            'reg_whitelist:': [],
+            'dir_whitelist:': [],
         }
 
     @property
@@ -52,6 +56,22 @@ class Neo84_task():
     @property
     def package_base_dir(self):
         return self.yaml['package_base_dir']
+
+    @property
+    def reg_whitelist(self):
+        return self.yaml['reg_whitelist']
+    
+    @property
+    def dir_file_whitelist(self):
+        return self.yaml['dir_file_whitelist']
+
+    @property
+    def use_reg_whitelist(self):
+        return self.yaml['use_reg_whitelist']
+
+    @property
+    def use_dir_file_whitelist(self):
+        return self.yaml['use_dir_file_whitelist']
 
     def load_from_file(self, file_name):
         with open(file_name, 'r') as file:

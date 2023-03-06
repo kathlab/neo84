@@ -4,6 +4,7 @@
 # | '_ \ / _ \/ _ \ / _ \/ /_| |
 # | | | |  __/ (_) | |_| \___  |
 # |_| |_|\___|\___/\_____/   |_/
+# task v0.1
 # Anaconda3
 
 # name of the application
@@ -32,3 +33,24 @@ os: "Windows 10"
 
 # build number
 build: "0"
+
+# whitelist toggle
+use_reg_whitelist: True
+use_dir_file_whitelist: True
+
+# whitelists may contain regular expressions :)
+# however, don't mix around "" and '' in strings - yaml won't like that
+# instead, create a more general regex
+
+# registry whitelist
+reg_whitelist:
+  - 'HKCU.*Anaconda3.*'
+
+# dir and file whitelist
+# empty directories are NOT copied!
+dir_file_whitelist:
+  - 'ProgramData/Anaconda3'
+  - 'ProgramData/Microsoft/Windows/Start Menu/Programs/Anaconda3 \(64-bit\)'
+  - 'Users/All Users/Anaconda3'
+  - 'Users/All Users/Microsoft/Windows/Start Menu/Programs/Anaconda3 \(64-bit\)'
+  - 'Users/Public/Documentws/Python Scripts'

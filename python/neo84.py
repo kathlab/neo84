@@ -53,12 +53,14 @@ def main():
 
         nprint('copy files to target...', add_pre_lf=True)
 
-        # TODO copy dirs and files over from Diff dir into target dir
-        app.copy_diff_data()
-
-
+        # copy dirs and files over from Diff dir into target dir
+        # via whitelist or everything
+        if (app.task.use_dir_file_whitelist):
+            app.copy_diff_whitelist_data()
+        else:
+            app.copy_diff_data()
+        
         # TODO generate tasks from scratch
-        # TODO add filter lists for registry and files
         # TODO add unit tests
 
         nprint('Done! 🎁', add_pre_lf=True)
