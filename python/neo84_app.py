@@ -53,6 +53,46 @@ class Neo84_app():
         print('Version:', self.version, 'for', self.compat_version)
         print('----------------------------')
 
+    # extract sys env reg adds in usable form
+    def __extract_sys_env_variable(self, value):
+        result = {
+            'env_name': '',
+            'env_values': []
+        }
+
+        # TODO make customizable
+        # filter all windows specific path entries
+        win_filter_list = [
+            '%SystemRoot%',
+            'system32',
+        ]
+
+        match = re.search(r'^HKLM,"SYSTEM\CurrentControlSet\Control\Session Manager\Environment","(.*)",[0x]*,"(.*)"', value)
+        if (match != None):
+            result['env_name'] = match[0]
+
+            temp = match[0].replace('"', '')
+            
+            for path in temp.split(';'):
+                # result ['env_values'] = temp.split(';')
+
+                # TODO check for win sys envs
+
+                result ['env_values'].append(path)
+
+            print(match)
+
+
+    # check if a HKLM line contains a sys env variable
+    # we need to filter them out of reg adds
+    # otherwise we overwrite sys env variable which is bad
+    def __is_sys_env(self, value):
+        match = re.search(r'^HKLM,"SYSTEM\CurrentControlSet\Control\Session Manager\Environment".*')
+        if (match != None):
+            return True
+        
+        return False
+
     ###########################################################################
 
     @property
@@ -121,10 +161,16 @@ class Neo84_app():
 
             # process reg ads
             for line in file:
+
+                # filter sys env reg additions
+                if (self.__is_sys_env(line)):
+                    continue
+
                 match = re.search('^HK[CRLMU]{2},', line)
                 if (match != None):
                     filterlist_found = False
 
+                    # TODO generalize filter
                     # check if we have to apply filterlist expression
                     if (self.task.use_reg_filterlist):
                        
@@ -261,3 +307,58 @@ class Neo84_app():
 
                 shutil.copy(source_path, target_path)
                 sprint('#', new_line='')
+
+    # add all system environment entries from Diff.inf
+    # theses are "hidden" inside registry additions
+    def get_sys_env_entries(self, file_name):
+        
+        # TODO bad things happen with windows encoded text file opened as UTF-8
+        with open(file_name, mode='r', encoding='ISO-8859-1') as file:
+            
+            # registry additions are the most mandatory
+            # everything else can be ignored
+            # first, find this entry, then collect all reg adds
+            line_found = False
+            reference_pos = 0
+            for line in file:
+                sprint('.', new_line='')
+
+                # find reg adds start line
+                match = re.search('^\[AddReg\]', line)
+                if (match != None):
+                    line_found = True
+                    #reference_pos = file.tell()
+                    break
+
+            # let's check if we got anything
+            if (line_found == False):
+                raise Exception('add_diff_reg() - file does not contain [AddReg]')
+
+            # process reg ads
+            for line in file:
+                match = re.search('^HK[CRLMU]{2},', line)
+                if (match != None):
+                    filterlist_found = False
+
+                    # TODO generalize filter
+                    # check if we have to apply filterlist expression
+                    if (self.task.use_reg_filterlist):
+                       
+                        for rx in self.task.reg_filterlist:
+                            match = re.search(rx, line)
+                            if (match != None):
+                                # found entry, done and proceed
+                                filterlist_found = True
+                                break
+
+                        # skip to next line if entry is not in filterlist
+                        if (filterlist_found == False):
+                            continue
+
+                    # add to list but remove line breaks
+                    self.setup_inf.inf[si.Package.reg_product][line.replace('\n', '')] = ''
+                    
+                    sprint('#', new_line='')
+                else:
+                    # we are done here
+                    break
