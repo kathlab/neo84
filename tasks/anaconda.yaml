@@ -34,21 +34,24 @@ os: "Windows 10"
 # build number
 build: "0"
 
-# whitelist toggle
-use_reg_whitelist: True
-use_dir_file_whitelist: True
+# filterlist toggle
+# if False, it just transfers everything
+use_reg_filterlist: True
+use_dir_file_filterlist: True
 
-# whitelists may contain regular expressions :)
+# filterlists may contain regular expressions :)
 # however, don't mix around "" and '' in strings - yaml won't like that
 # instead, create a more general regex
+# just add what you want to add to the package
 
-# registry whitelist
-reg_whitelist:
+# registry filterlist
+reg_filterlist:
   - 'HKCU.*Anaconda3.*'
 
-# dir and file whitelist
-# empty directories are NOT copied!
-dir_file_whitelist:
+# dir and file filterlist
+# you can add directories or files with complete path
+# empty directories are NOT copied NOR created!
+dir_file_filterlist:
   - 'ProgramData/Anaconda3'
   - 'ProgramData/Microsoft/Windows/Start Menu/Programs/Anaconda3 \(64-bit\)'
   - 'Users/All Users/Anaconda3'

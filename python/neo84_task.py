@@ -15,10 +15,10 @@ class Neo84_task():
             'app_vendor': '',
             'app_version': '',
             'package_base_dir': '',
-            'use_reg_whitelist': False,
-            'use_dir_file_whitelist': False,
-            'reg_whitelist:': [],
-            'dir_whitelist:': [],
+            'use_reg_filterlist': False,
+            'use_dir_file_filterlist': False,
+            'reg_filterlist:': [],
+            'dir_filterlist:': [],
         }
 
     @property
@@ -58,20 +58,20 @@ class Neo84_task():
         return self.yaml['package_base_dir']
 
     @property
-    def reg_whitelist(self):
-        return self.yaml['reg_whitelist']
+    def reg_filterlist(self):
+        return self.yaml['reg_filterlist']
     
     @property
-    def dir_file_whitelist(self):
-        return self.yaml['dir_file_whitelist']
+    def dir_file_filterlist(self):
+        return self.yaml['dir_file_filterlist']
 
     @property
-    def use_reg_whitelist(self):
-        return self.yaml['use_reg_whitelist']
+    def use_reg_filterlist(self):
+        return self.yaml['use_reg_filterlist']
 
     @property
-    def use_dir_file_whitelist(self):
-        return self.yaml['use_dir_file_whitelist']
+    def use_dir_file_filterlist(self):
+        return self.yaml['use_dir_file_filterlist']
 
     def load_from_file(self, file_name):
         with open(file_name, 'r') as file:

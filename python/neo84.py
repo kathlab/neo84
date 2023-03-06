@@ -54,9 +54,9 @@ def main():
         nprint('copy files to target...', add_pre_lf=True)
 
         # copy dirs and files over from Diff dir into target dir
-        # via whitelist or everything
-        if (app.task.use_dir_file_whitelist):
-            app.copy_diff_whitelist_data()
+        # via filterlist or everything
+        if (app.task.use_dir_file_filterlist):
+            app.copy_diff_filterlist_data()
         else:
             app.copy_diff_data()
         

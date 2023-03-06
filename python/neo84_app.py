@@ -123,20 +123,20 @@ class Neo84_app():
             for line in file:
                 match = re.search('^HK[CRLMU]{2},', line)
                 if (match != None):
-                    whitelist_found = False
+                    filterlist_found = False
 
-                    # check if we have to apply whitelist expression
-                    if (self.task.use_reg_whitelist):
+                    # check if we have to apply filterlist expression
+                    if (self.task.use_reg_filterlist):
                        
-                        for rx in self.task.reg_whitelist:
+                        for rx in self.task.reg_filterlist:
                             match = re.search(rx, line)
                             if (match != None):
                                 # found entry, done and proceed
-                                whitelist_found = True
+                                filterlist_found = True
                                 break
 
-                        # skip to next line if entry is not in whitelist
-                        if (whitelist_found == False):
+                        # skip to next line if entry is not in filterlist
+                        if (filterlist_found == False):
                             continue
 
                     # add to list but remove line breaks
@@ -158,7 +158,7 @@ class Neo84_app():
                 #self.add_files(join(root, dir))
 
             for file in files:
-                whitelist_found = False
+                filterlist_found = False
                 
                 sprint('#', new_line='')
 
@@ -166,17 +166,18 @@ class Neo84_app():
                 base_path = join(root, file)
                 base_path = base_path.replace(str(self.task.matrix42_diff_dir + '/C/'), '')
 
-                # apply whitelist
-                if (self.task.use_dir_file_whitelist):
-                    for entry in self.task.dir_file_whitelist:
+                # TODO make filterlist filter more general
+                # apply filterlist
+                if (self.task.use_dir_file_filterlist):
+                    for entry in self.task.dir_file_filterlist:
                         match = re.search(entry, base_path)
 
                         if (match != None):
-                            whitelist_found = True
+                            filterlist_found = True
                             break
                 
-                    # skip file or directory if not found via whitelist
-                    if (whitelist_found == False):
+                    # skip file or directory if not found via filterlist
+                    if (filterlist_found == False):
                         continue
 
                 # construct a file install entry
@@ -220,34 +221,35 @@ class Neo84_app():
             break
 
     # copy dirs and files according to white lists
-    def copy_diff_whitelist_data(self):
+    def copy_diff_filterlist_data(self):
         base_dir = self.__task.matrix42_diff_dir + '/C'
         target_dir = self.__task.package_base_dir + '/' + self.__task.app_vendor + '/' + self.__task.app + '/' + self.__task.app_version
 
-        # copy everything according to whitelists
+        # copy everything according to filterlists
         for root, dirs, files in os.walk(base_dir):
 
             for dir in dirs:
                 sprint('.', new_line='')
 
             for file in files:
-                whitelist_found = False
+                filterlist_found = False
                 source_path = join(root, file)
 
                 # replace matrix diff root path with target path
                 target_path = source_path.replace(str(self.task.matrix42_diff_dir + '/C'), target_dir)
 
-                # apply whitelist
-                if (self.task.use_dir_file_whitelist):
-                    for entry in self.task.dir_file_whitelist:
+                # TODO make filterlist filter more general
+                # apply filterlist
+                if (self.task.use_dir_file_filterlist):
+                    for entry in self.task.dir_file_filterlist:
                         match = re.search(entry, source_path)
 
                         if (match != None):
-                            whitelist_found = True
+                            filterlist_found = True
                             break
                 
-                    # skip file or directory if not found via whitelist
-                    if (whitelist_found == False):
+                    # skip file or directory if not found via filterlist
+                    if (filterlist_found == False):
                         continue
 
                 # create target directory, ignore if dir exists
