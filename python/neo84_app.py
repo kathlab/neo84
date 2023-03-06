@@ -133,18 +133,23 @@ class Neo84_app():
     # add files to install list (no directories!)
     def add_files(self, base_path):
 
-        # TODO probably fix recursion issuse (walk already does that!)
         for root, dirs, files in os.walk(base_path):
 
             for dir in dirs:
                 sprint('.', new_line='')
-                self.add_files(join(root, dir))
+                # TODO recursion not necessary here
+                #self.add_files(join(root, dir))
 
             for file in files:
                 sprint('#', new_line='')
 
+                # remove matrix diff root path
+                base_path = join(root, file)
+                test = str(self.__task.matrix42_diff_dir + '/C/')
+                base_path = base_path.replace(test, '')
+
                 # construct a file install entry
-                install_entry = '1:' + join(root, file) + ','
+                install_entry = '1:' + base_path + ','
                 install_entry = install_entry + ' ' * (196-len(install_entry))
                 install_entry = install_entry + 'C:/,'
                 install_entry = install_entry + ' ' * (50-len('C:/'))

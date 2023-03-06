@@ -2,6 +2,7 @@
 **/__pycache__
 **/.DS_Store
 **/priv*
+**/targets/*
 vscode-container-ext/.vscode-server/bin
 vscode-container-ext/.vscode-server/data
 vscode-container-ext/.vscode-server/extensions
