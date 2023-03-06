@@ -51,10 +51,17 @@ def main():
         # save inf to file
         app.save_inf()
 
+        nprint('copy files to target...', add_pre_lf=True)
+
         # TODO copy dirs and files over from Diff dir into target dir
+        app.copy_diff_data()
+
+
         # TODO generate tasks from scratch
         # TODO add filter lists for registry and files
         # TODO add unit tests
+
+        nprint('Done! 🎁', add_pre_lf=True)
         
     except Exception as ex:
         print("neo84::", ex)

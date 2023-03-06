@@ -4,6 +4,7 @@ import neo84_task as task
 import os
 import re
 import setup_inf as si
+import shutil
 
 class Neo84_app():
 
@@ -132,6 +133,7 @@ class Neo84_app():
     # add files to install list (no directories!)
     def add_files(self, base_path):
 
+        # TODO probably fix recursion issuse (walk already does that!)
         for root, dirs, files in os.walk(base_path):
 
             for dir in dirs:
@@ -164,3 +166,19 @@ class Neo84_app():
 
             for entry in inf:
                 file.write(entry + '\n')
+
+    # copy all dirs and files from the Matrix42 Diff directory into target
+    def copy_diff_data(self):
+        base_dir = self.__task.matrix42_diff_dir + '/C'
+        target_dir = self.__task.package_base_dir + '/' + self.__task.app_vendor + '/' + self.__task.app + '/' + self.__task.app_version
+
+        # get all files in Diff/C only
+        for root, dirs, files in os.walk(base_dir):
+            for dir in dirs:
+                shutil.copytree(src=str(base_dir + '/' + dir), dst=target_dir + '/' + dir)
+                sprint('#', new_line='')
+
+            # only the top directories are mandatory since we copy them recursively
+            # so, just stop at the first traversal
+            break
+
