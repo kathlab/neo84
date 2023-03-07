@@ -1,5 +1,7 @@
 from neo84_print import sprint
 from os.path import join, getsize
+import neo84_filter as filter
+import neo84_sysenv as sysenv
 import neo84_task as task
 import os
 import re
@@ -55,65 +57,73 @@ class Neo84_app():
         print('Version:', self.version, 'for', self.compat_version)
         print('----------------------------')
 
+    def __is_in_filter(self, filter, value):
+        found = False
+
+        for entry in filter:
+            filter_match = re.search(entry, value)
+            if (filter_match != None):
+                found = True
+                sprint('F', '')
+                break
+
+        return found
+
     # extract sys env reg adds in usable form
     def __extract_sys_env_variable(self, value):
+        sysenv_vars = sysenv.Sysenv_var()
 
-        # TODO likely to refactor to something better designed
-        result = {
-            si.Sys_env_vars.env_name: '',
-            si.Sys_env_vars.env_values: []
-        }
-
-        # TODO make customizable
         # filter all windows specific path entries
-        win_filter_list = [
-            '%SystemRoot%',
-            '%SYSTEMROOT%',
-            '[sS]{1,1}ystem32',
-        ]
+        win_filter_list = filter.Filter_list(filter.WIN_SYSENV_FILTER)
 
         match = re.match(r'^HKLM,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment","(.*)",[0-9a-fA-Fx]*,"(.*)"', value)
         if (match != None and len(match.groups()) == 2):
-            result[si.Sys_env_vars.env_name] = match.groups()[0]
+            sysenv_vars.name = match.groups()[0]
 
             temp = match.groups()[1].replace('"', '')
             
             for path in temp.split(';'):
-                win_sys_env_found = False
 
-                # find any win sys envs by regex filter
-                for entry in win_filter_list:
-                    filter_match = re.search(entry, path)
-                    if (filter_match != None):
-                        win_sys_env_found = True
-                        sprint('W', '')
-                        break
+                # TODO remove
+                # win_sys_env_found = False
 
-                # ignore win sys envs
-                if (win_sys_env_found):
+                # # find any win sys envs by regex filter
+                # for entry in win_filter_list.filter:
+                #     filter_match = re.search(entry, path)
+                #     if (filter_match != None):
+                #         win_sys_env_found = True
+                #         sprint('W', '')
+                #         break
+
+                # # ignore win sys envs
+                # if (win_sys_env_found):
+                #     continue
+
+                # ignore win sysenv vars
+                if (self.__is_in_filter(win_filter_list.filter, path)):
                     continue
 
-                result [si.Sys_env_vars.env_values].append(path)
+                sysenv_vars.values.append(path)
         
-        return result
+        return sysenv_vars
 
     # add a system environment variable to setup.inf
-    def __add_sys_env_variables(self, value):
+    def __add_sys_env_variables(self, value: sysenv.Sysenv_var):
         entry = ''
 
         # TODO likely to refactor sys env "struct"
         # TODO likely to refactor 'Path' and 'SET' etc.
         # distinct between simple (single) and PATH (multiple)
-        if (value[si.Sys_env_vars.env_name] == 'Path'):
+        if (value.name == 'Path'):
             # could be multiple PATH entries
-            for path in value[si.Sys_env_vars.env_values]:
+            for path in value.values:
                 entry = 'PATH >' + path
                 
                 # add entry to Autoexec.bat:Product
                 self.setup_inf.inf[si.Package.autoexec_bat_product][entry] = ''
         else:
             # just one entry, could be anything including a path
-            entry = 'SET ' + value[si.Sys_env_vars.env_name] + '=' + value[si.Sys_env_vars.env_values][0]
+            entry = 'SET ' + value.name + '=' + value.values[0]
 
             # add entry to Autoexec.bat:Product
             self.setup_inf.inf[si.Package.autoexec_bat_product][entry] = ''
@@ -174,9 +184,10 @@ class Neo84_app():
     # add all registry additions from Diff.inf
     def add_diff_reg(self, file_name):
         
-        # TODO bad things happen with windows encoded text file opened as UTF-8
+        # bad things happen with windows encoded text file opened as UTF-8
         with open(file_name, mode='r', encoding='ISO-8859-1') as file:
             
+            # TODO line_found refactor to filter_list
             # registry additions are the most mandatory
             # everything else can be ignored
             # first, find this entry, then collect all reg adds
@@ -207,21 +218,29 @@ class Neo84_app():
 
                 match = re.search('^HK[CRLMU]{2},', line)
                 if (match != None):
-                    filterlist_found = False
+                    # filterlist_found = False
 
-                    # TODO generalize filter
+                    # # TODO remove
+                    # # check if we have to apply filterlist expression
+                    # if (self.task.use_reg_filterlist):
+                       
+                    #     for rx in self.task.reg_filterlist:
+                    #         match = re.search(rx, line)
+                    #         if (match != None):
+                    #             # found entry, done and proceed
+                    #             filterlist_found = True
+                    #             break
+
+                    #     # skip to next line if entry is not in filterlist
+                    #     if (filterlist_found == False):
+                    #         continue
+
                     # check if we have to apply filterlist expression
                     if (self.task.use_reg_filterlist):
-                       
-                        for rx in self.task.reg_filterlist:
-                            match = re.search(rx, line)
-                            if (match != None):
-                                # found entry, done and proceed
-                                filterlist_found = True
-                                break
+                        reg_filter = filter.Filter_list(self.task.reg_filterlist)
 
                         # skip to next line if entry is not in filterlist
-                        if (filterlist_found == False):
+                        if (self.__is_in_filter(reg_filter.filter, line) == False):
                             continue
 
                     # add to list but remove line breaks
@@ -243,7 +262,8 @@ class Neo84_app():
                 #self.add_files(join(root, dir))
 
             for file in files:
-                filterlist_found = False
+                # TODO remove
+                # filterlist_found = False
                 
                 sprint('#', new_line='')
 
@@ -251,19 +271,27 @@ class Neo84_app():
                 base_path = join(root, file)
                 base_path = base_path.replace(str(self.task.matrix42_diff_dir + '/C/'), '')
 
-                # TODO make filterlist filter more general
-                # apply filterlist
-                if (self.task.use_dir_file_filterlist):
-                    for entry in self.task.dir_file_filterlist:
-                        match = re.search(entry, base_path)
 
-                        if (match != None):
-                            filterlist_found = True
-                            break
+
+                # TODO remove
+                # apply filterlist
+                # if (self.task.use_dir_file_filterlist):
+                #     for entry in self.task.dir_file_filterlist:
+                #         match = re.search(entry, base_path)
+
+                #         if (match != None):
+                #             filterlist_found = True
+                #             break
                 
-                    # skip file or directory if not found via filterlist
-                    if (filterlist_found == False):
-                        continue
+                #     # skip file or directory if not found via filterlist
+                #     if (filterlist_found == False):
+                #         continue
+
+                dirfile_filter = filter.Filter_list(self.task.dir_file_filterlist)
+
+                # skip file or directory if not found via filterlist
+                if (self.__is_in_filter(dirfile_filter.filter, base_path) == False):
+                    continue
 
                 # construct a file install entry
                 install_entry = '1:' + base_path + ','
@@ -318,7 +346,8 @@ class Neo84_app():
                 sprint('.', new_line='')
 
             for file in files:
-                filterlist_found = False
+                # TODO remove
+                # filterlist_found = False
                 source_path = join(root, file)
 
                 # replace matrix diff root path with target path
@@ -326,17 +355,23 @@ class Neo84_app():
 
                 # TODO make filterlist filter more general
                 # apply filterlist
-                if (self.task.use_dir_file_filterlist):
-                    for entry in self.task.dir_file_filterlist:
-                        match = re.search(entry, source_path)
+                # if (self.task.use_dir_file_filterlist):
+                #     for entry in self.task.dir_file_filterlist:
+                #         match = re.search(entry, source_path)
 
-                        if (match != None):
-                            filterlist_found = True
-                            break
+                #         if (match != None):
+                #             filterlist_found = True
+                #             break
                 
-                    # skip file or directory if not found via filterlist
-                    if (filterlist_found == False):
-                        continue
+                #     # skip file or directory if not found via filterlist
+                #     if (filterlist_found == False):
+                #         continue
+
+                dirfile_filter = filter.Filter_list(self.task.dir_file_filterlist)
+
+                # skip file or directory if not found via filterlist
+                if (self.__is_in_filter(dirfile_filter.filter, source_path) == False):
+                    continue
 
                 # create target directory, ignore if dir exists
                 target_head_path = os.path.dirname(target_path)
@@ -378,21 +413,31 @@ class Neo84_app():
             for line in file:
                 match = re.search('^HK[CRLMU]{2},', line)
                 if (match != None):
+
+                    # TODO remove
                     filterlist_found = False
 
-                    # TODO generalize filter
+                    # TODO remove
+                    # check if we have to apply filterlist expression
+                    # if (self.task.use_reg_filterlist):
+                       
+                    #     for rx in self.task.reg_filterlist:
+                    #         match = re.search(rx, line)
+                    #         if (match != None):
+                    #             # found entry, done and proceed
+                    #             filterlist_found = True
+                    #             break
+
+                    #     # skip to next line if entry is not in filterlist
+                    #     if (filterlist_found == False):
+                    #         continue
+
                     # check if we have to apply filterlist expression
                     if (self.task.use_reg_filterlist):
-                       
-                        for rx in self.task.reg_filterlist:
-                            match = re.search(rx, line)
-                            if (match != None):
-                                # found entry, done and proceed
-                                filterlist_found = True
-                                break
+                        reg_filter = filter.Filter_list(self.task.reg_filterlist)
 
                         # skip to next line if entry is not in filterlist
-                        if (filterlist_found == False):
+                        if (self.__is_in_filter(reg_filter.filter, line) == False):
                             continue
 
                     # add to list but remove line breaks

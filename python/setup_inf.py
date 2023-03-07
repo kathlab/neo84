@@ -29,21 +29,6 @@ class Package(IntEnum):
     shell_product = 20, # start menu links, etc.
     autoexec_bat_product = 21, # system environment variables
 
-# TODO I have to think over that concept
-# sys env vars container
-class Sys_env_vars():
-    def __init__(self):
-        self.__env_name = 'env_name'
-        self.__env_values = 'env_values'
-
-    @property
-    def env_name(self):
-        return self.__env_name
-
-    @property
-    def env_values(self):
-        return self.__env_values
-
 # setup.inf structure
 class Setup_inf():
 

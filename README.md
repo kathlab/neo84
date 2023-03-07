@@ -43,7 +43,7 @@ How to create Matrix 42 package with neo84:
 6. __REVIEW__ Setup.inf
 7. __TEST__ package extensively
 
-Pitfalls in creating Matrix 42 packages
+Common pitfalls in creating Matrix 42 packages
 ---
 
 It's easy to create a feral package which just destroys your target machine. Using a fresh VM for testing out packages is the preferred and safest way. However some pitfalls are mandatory to avoid:
@@ -53,7 +53,7 @@ __1. Install package. No audition nor tests.__
 ```
 "If one like to blow up a computer installation, just install without package sanity check."
 ```
-Listen to the words of wisdom. Audition and testing is mandatory, not an option!
+Listen to the words of wisdom. Audition and testing is mandatory, not an option.
 
 __2. Accidentically set system environment variables__
 
@@ -61,7 +61,7 @@ This can be fatal especially if the package gets uninstalled. The installation l
 
 __3. Install things which do not belong to your app__
 
-Also fatal if you install any windows update stuff which compromises the machine installation. Keep an eye on registry entries! And make use of filter lists to get rid of any unwanted data when running a neo84 task. Less is more.
+Also fatal if you install any windows update stuff which compromises the machine installation. Keep an eye on registry entries. And make use of filter lists to get rid of any unwanted data when running a neo84 task. Less is more.
 
 Build docker image:
 ---
