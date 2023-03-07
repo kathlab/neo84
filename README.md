@@ -24,7 +24,7 @@ neo84 should work fine for:
 What I have planned to implement and thus mostly __NOT IMPLEMENTED YET__:
 
 * add filter lists for registry and files [__IMPLEMENTED__]
-* add system environment variables processing []
+* add system environment variables processing [__IMPLEMENTED__]
 * generate simple packages from scratch to... []
     * ...add system environment variables (PATH, etc.) []
     * ...copy files on targets without having any setup.exe on hands []
