@@ -5,24 +5,25 @@
  | '_ \ / _ \/ _ \ / _ \/ /_| |
  | | | |  __/ (_) | |_| \___  |
  |_| |_|\___|\___/\_____/   |_/
- Package builder for Matrix42
+ Package builder for Matrix42 🎁
 ```
 
-__Please note:__ This app is under development, buggy and may crash anything which comes in contact with and it drinks away your coffee! neo84 is also not affiliated with Matrix42 AG by any means. It does not use any components from the Matrix42 software.
+__Please note:__ This app is under development, buggy and may crash anything which comes in contact with and it drinks away your coffee! neo84 is also not affiliated with Matrix42 AG by any means. It does not use any components nor secret wisdom from the Matrix42 software.
 
 neo84 is an incomplete Matrix42 compatible package creator. There's no way to get every use case covered since some parts are reverse engineered (due to unavailable technical documentation), others are from freely available documentation and examples. I created this for my specific needs and others may also like it. I work mostly on macOS and Linux-based machines, so having a package creation environment for Matrix42 on non-Windows makes my life a lot easier.
 
-It is mandatory to look into the generated results and make sane changes AND PEFORM TESTS! __If you brick your computer installations, please don't blame this app ;)__
+__It is mandatory to look into the generated results and make sane changes AND PEFORM TESTS! If you brick your computer installations, please don't blame this app ;)__
 
-To create packages, a Diff directory created by the _Matrix 42 Package Wizard_ is required.
+To currently create packages, a Diff directory created by the _Matrix 42 Package Wizard_ is required.
 
 neo84 should work fine for:
 
 * build packages on linux or dockerized environments
-* create packages from a system diff (__under current development!__)
+* create packages from a system diff
 
 What I have planned to implement and thus mostly __NOT IMPLEMENTED YET__:
 
+* cleanup code []
 * add filter lists for registry and files [__IMPLEMENTED__]
 * add system environment variables processing [__IMPLEMENTED__]
 * generate simple packages from scratch to... []
@@ -31,72 +32,36 @@ What I have planned to implement and thus mostly __NOT IMPLEMENTED YET__:
     * ...perform unattended installs []
     * ...maybe MSI installs []
 
-Create Matrix42 package with neo84:
+How to create Matrix 42 package with neo84:
 ---
 
-1. Create a file MY_TASK.yaml
+1. Run a system diff install with Matrix 42 Package Wizard
+2. Copy Diff directory on whatever machine you like to work on
+3. Inspect Diff.inf and remove all files and directories which do not belong to the app you want to package.
+4. Create a task file (check out the examples in tasks/)
+5. Run neo84 task
+6. __REVIEW__ Setup.inf
+7. __TEST__ package extensively
+
+Pitfalls in creating Matrix 42 packages
+---
+
+It's easy to create a feral package which just destroys your target machine. Using a fresh VM for testing out packages is the preferred and safest way. However some pitfalls are mandatory to avoid:
+
+__1. Install package. No audition nor tests.__
 
 ```
-# name of the application
-app: "Anaconda"
-
-# name of the vendor
-app_vendor: "Anaconda3"
-
-# application version
-app_version: "2022.10"
-
-# location of the Matrix42 Diff directory
-matrix42_diff_dir: "C:/Temp/Diff"
-
-# location where to store the package
-package_base_dir: "targets"
-
-# your name
-author: "Mrs. Curious"
-
-# build date
-date: "24.02.2023"
-
-# build os
-os: "Windows 10"
-
-# build number
-build: "0"
-
-# description
-description: "Anaconda3 for computer labs"
-
-# filterlist toggle
-use_reg_filterlist: True
-use_dir_file_filterlist: True
-
-# filterlists may contain regular expressions :)
-# however, don't mix around "" and '' in strings - yaml won't like that
-# instead, create a more general regex
-
-# registry filterlist
-reg_filterlist:
-  - 'HKCU.*Anaconda3.*'
-
-# dir and file filterlist
-# empty directories are NOT copied!
-dir_file_filterlist:
-  - 'ProgramData/Anaconda3'
-  - 'ProgramData/Microsoft/Windows/Start Menu/Programs/Anaconda3 \(64-bit\)'
-  - 'Users/All Users/Anaconda3'
-  - 'Users/All Users/Microsoft/Windows/Start Menu/Programs/Anaconda3 \(64-bit\)'
-  - 'Users/Public/Documentws/Python Scripts'
+"If one like to blow up a computer installation, just install without package sanity check."
 ```
+Listen to the words of wisdom. Audition and testing is mandatory, not an option!
 
-2. Run neo84 to create package
+__2. Accidentically set system environment variables__
 
-```
-$ python neo84.py MY_TASK.yaml
-```
+This can be fatal especially if the package gets uninstalled. The installation looks fine but chaos breaks loose upon uninstallation. Everything __set__ is getting __unset__! This can easily clear out your complete system path etc. Just set what is specific to the application itself.
 
-3. __REVIEW__ Setup.inf
-4. __TEST__ package
+__3. Install things which do not belong to your app__
+
+Also fatal if you install any windows update stuff which compromises the machine installation. Keep an eye on registry entries! And make use of filter lists to get rid of any unwanted data when running a neo84 task. Less is more.
 
 Build docker image:
 ---
@@ -116,6 +81,5 @@ Run VS Code inside docker container
 ---
 
 1. Open VS Code workspace
-2. (optional) Add ports forwarding of 8888 and 8889 in VS Code (for Juypter Notebook web app)
-3. Dev Containers: Reopen in Container
-4. Install VS Code extensions as needed
+2. Dev Containers: Reopen in Container
+3. Install VS Code extensions as needed
