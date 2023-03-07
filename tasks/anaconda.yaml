@@ -34,6 +34,9 @@ os: "Windows 10"
 # build number
 build: "0"
 
+# description
+description: "Anaconda3 for computer student labs"
+
 # filterlist toggle
 # if False, it just transfers everything
 use_reg_filterlist: True

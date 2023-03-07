@@ -11,6 +11,7 @@ class Neo84_task():
             'date': '',
             'os': '',
             'build': '',
+            'description': '',
             'matrix42_diff_dir': '', # path to Matrix42 temp data including Diff/
             'app_vendor': '',
             'app_version': '',
@@ -41,6 +42,10 @@ class Neo84_task():
     def build(self):
         return self.yaml['build']
         
+    @property
+    def description(self):
+        return self.yaml['description']
+
     @property
     def matrix42_diff_dir(self):
         return self.yaml['matrix42_diff_dir']

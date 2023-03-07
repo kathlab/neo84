@@ -157,13 +157,14 @@ class Neo84_app():
         inf = []
 
         # set meta_data from task
-        self.__setup_inf.inf[si.Package.meta_data]['Author'] = self.__task.author
-        self.__setup_inf.inf[si.Package.meta_data]['CreationDate'] = self.__task.date
-        self.__setup_inf.inf[si.Package.meta_data]['Tested on'] = self.__task.os
-        self.__setup_inf.inf[si.Package.meta_data]['Build'] = self.__task.build
+        self.__setup_inf.inf[si.Package.meta_data]['Author'] = self.task.author
+        self.__setup_inf.inf[si.Package.meta_data]['CreationDate'] = self.task.date
+        self.__setup_inf.inf[si.Package.meta_data]['Tested on'] = self.task.os
+        self.__setup_inf.inf[si.Package.meta_data]['Build'] = self.task.build
+        self.__setup_inf.inf[si.Package.meta_data]['Description'] = self.task.description
 
         for package_section in range(0, 22):
-            entries = self.__setup_inf.inf[package_section]
+            entries = self.setup_inf.inf[package_section]
             inf.append('')
             for key,value in entries.items():
                 inf.append(self.__build_inf_line(key, value))
@@ -287,6 +288,7 @@ class Neo84_app():
 
             for entry in inf:
                 file.write(entry + '\n')
+                sprint('#', '')
 
     # copy all dirs and files from the Matrix42 Diff directory into target (no white list)
     def copy_diff_data(self):
