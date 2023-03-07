@@ -64,6 +64,9 @@ os: "Windows 10"
 # build number
 build: "0"
 
+# description
+description: "Anaconda3 for computer labs"
+
 # filterlist toggle
 use_reg_filterlist: True
 use_dir_file_filterlist: True

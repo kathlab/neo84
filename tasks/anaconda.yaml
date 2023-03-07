@@ -35,7 +35,7 @@ os: "Windows 10"
 build: "0"
 
 # description
-description: "Anaconda3 for computer student labs"
+description: "Anaconda3 for computer labs"
 
 # filterlist toggle
 # if False, it just transfers everything
