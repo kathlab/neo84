@@ -18,8 +18,8 @@ To currently create packages, a Diff directory created by the _Matrix 42 Package
 
 neo84 should work fine for:
 
-* build packages on linux or dockerized environments
-* create packages from a system diff
+* build reproducible packages on linux or dockerized environments
+* build packages from a system diff
 
 What I have planned to implement and thus mostly __NOT IMPLEMENTED YET__:
 
@@ -37,16 +37,16 @@ How to create Matrix 42 package with neo84:
 
 1. Run a system diff install with Matrix 42 Package Wizard
 2. Copy Diff directory on whatever machine you like to work on
-3. Inspect Diff.inf and remove all files and directories which do not belong to the app you want to package.
+3. Inspect Diff.inf and identify all files and directories which do not belong to the app you want to package. You may remove unwanted files and directories but you can just use filter lists which is faster and reproducible (next step).
 4. Create a task file (check out the examples in tasks/)
 5. Run neo84 task
 6. __REVIEW__ Setup.inf
-7. __TEST__ package extensively
+7. __TEST__ package extensively with Setup.exe from Matrix 42 in a virtual machine. Testing on bare-metal is anoying since you cannot undo changes to the system fast. You are required to do that a lot for testing since a fresh system installation is mandatory for every single test.
 
 Common pitfalls in creating Matrix 42 packages
 ---
 
-It's easy to create a feral package which just destroys your target machine. Using a fresh VM for testing out packages is the preferred and safest way. However some pitfalls are mandatory to avoid:
+It's easy to create a feral package which just destroys your target machine. Using a fresh VM for testing out packages is the preferred, fast and the safest way. However some pitfalls are mandatory to avoid:
 
 __1. Install package. No audition nor tests.__
 
