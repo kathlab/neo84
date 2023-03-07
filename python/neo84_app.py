@@ -36,8 +36,10 @@ class Neo84_app():
         # ...HK?? registry entry
         # ...#???:???? matrix42 specific action to define a link to a [IniSection]
         # ...?: file entry
+        # SET system environment variable
+        # PATH a path entry to PATH system environment variable
 
-        match = re.search('^\[|^;|^HK[CRLM]{2}|^#|^[0-9]{1}:', key)
+        match = re.search('^\[|^;|^HK[CRLM]{2}|^#|^[0-9]{1}:|^SET|^PATH', key)
         if (match != None):
             return key
 
@@ -55,39 +57,73 @@ class Neo84_app():
 
     # extract sys env reg adds in usable form
     def __extract_sys_env_variable(self, value):
+
+        # TODO likely to refactor to something better designed
         result = {
-            'env_name': '',
-            'env_values': []
+            si.Sys_env_vars.env_name: '',
+            si.Sys_env_vars.env_values: []
         }
 
         # TODO make customizable
         # filter all windows specific path entries
         win_filter_list = [
             '%SystemRoot%',
-            'system32',
+            '%SYSTEMROOT%',
+            '[sS]{1,1}ystem32',
         ]
 
-        match = re.search(r'^HKLM,"SYSTEM\CurrentControlSet\Control\Session Manager\Environment","(.*)",[0x]*,"(.*)"', value)
-        if (match != None):
-            result['env_name'] = match[0]
+        match = re.match(r'^HKLM,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment","(.*)",[0-9a-fA-Fx]*,"(.*)"', value)
+        if (match != None and len(match.groups()) == 2):
+            result[si.Sys_env_vars.env_name] = match.groups()[0]
 
-            temp = match[0].replace('"', '')
+            temp = match.groups()[1].replace('"', '')
             
             for path in temp.split(';'):
-                # result ['env_values'] = temp.split(';')
+                win_sys_env_found = False
 
-                # TODO check for win sys envs
+                # find any win sys envs by regex filter
+                for entry in win_filter_list:
+                    filter_match = re.search(entry, path)
+                    if (filter_match != None):
+                        win_sys_env_found = True
+                        sprint('W', '')
+                        break
 
-                result ['env_values'].append(path)
+                # ignore win sys envs
+                if (win_sys_env_found):
+                    continue
 
-            print(match)
+                result [si.Sys_env_vars.env_values].append(path)
+        
+        return result
+
+    # add a system environment variable to setup.inf
+    def __add_sys_env_variables(self, value):
+        entry = ''
+
+        # TODO likely to refactor sys env "struct"
+        # TODO likely to refactor 'Path' and 'SET' etc.
+        # distinct between simple (single) and PATH (multiple)
+        if (value[si.Sys_env_vars.env_name] == 'Path'):
+            # could be multiple PATH entries
+            for path in value[si.Sys_env_vars.env_values]:
+                entry = 'PATH >' + path
+                
+                # add entry to Autoexec.bat:Product
+                self.setup_inf.inf[si.Package.autoexec_bat_product][entry] = ''
+        else:
+            # just one entry, could be anything including a path
+            entry = 'SET ' + value[si.Sys_env_vars.env_name] + '=' + value[si.Sys_env_vars.env_values][0]
+
+            # add entry to Autoexec.bat:Product
+            self.setup_inf.inf[si.Package.autoexec_bat_product][entry] = ''
 
 
     # check if a HKLM line contains a sys env variable
     # we need to filter them out of reg adds
     # otherwise we overwrite sys env variable which is bad
     def __is_sys_env(self, value):
-        match = re.search(r'^HKLM,"SYSTEM\CurrentControlSet\Control\Session Manager\Environment".*')
+        match = re.search(r'^HKLM,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment".*', value)
         if (match != None):
             return True
         
@@ -126,7 +162,7 @@ class Neo84_app():
         self.__setup_inf.inf[si.Package.meta_data]['Tested on'] = self.__task.os
         self.__setup_inf.inf[si.Package.meta_data]['Build'] = self.__task.build
 
-        for package_section in range(0, 21):
+        for package_section in range(0, 22):
             entries = self.__setup_inf.inf[package_section]
             inf.append('')
             for key,value in entries.items():
@@ -162,8 +198,10 @@ class Neo84_app():
             # process reg ads
             for line in file:
 
-                # filter sys env reg additions
+                # filter and extract sys env reg additions
                 if (self.__is_sys_env(line)):
+                    sys_env_variable = self.__extract_sys_env_variable(line)
+                    self.__add_sys_env_variables(sys_env_variable)
                     continue
 
                 match = re.search('^HK[CRLMU]{2},', line)

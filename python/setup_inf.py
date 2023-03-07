@@ -29,6 +29,22 @@ class Package(IntEnum):
     shell_product = 20, # start menu links, etc.
     autoexec_bat_product = 21, # system environment variables
 
+# TODO I have to think over that concept
+# sys env vars container
+class Sys_env_vars():
+    def __init__(self):
+        self.__env_name = 'env_name'
+        self.__env_values = 'env_values'
+
+    @property
+    def env_name(self):
+        return self.__env_name
+
+    @property
+    def env_values(self):
+        return self.__env_values
+
+# setup.inf structure
 class Setup_inf():
 
     def __init__(self):
@@ -279,7 +295,7 @@ class Setup_inf():
             # SET MY_VARIABLE_NAME=WHATEVER
             # SET CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6
 
-            # add path to PATH variables
+            # add path to PATH system environment variable
             # PATH >MY_PATH
             # PATH >C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6\bin
         }

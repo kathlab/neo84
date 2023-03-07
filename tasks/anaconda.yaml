@@ -17,7 +17,7 @@ app_vendor: "Anaconda3"
 app_version: "2022.10"
 
 # location of the Matrix42 Diff directory
-matrix42_diff_dir: "priv_reference/Diff"
+matrix42_diff_dir: "priv_reference/Diff.ANACONDA"
 
 # location where to store the package
 package_base_dir: "targets"
