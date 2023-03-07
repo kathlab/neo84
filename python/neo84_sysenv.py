@@ -5,10 +5,6 @@ class Sysenv_var():
         self.__name = ''
         self.__values = []
 
-    def __init__(self, name):
-        self.__name = name
-        self.__values = []
-
     @property
     def name(self):
         return self.__name
