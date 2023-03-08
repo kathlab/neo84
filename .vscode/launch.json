@@ -20,7 +20,7 @@
             "program": "${workspaceFolder}/python/neo84.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["tasks/anaconda.yaml"],
+            "args": ["tasks/androidstudiosdk.yaml"],
         },
         {
             "name": "neo84 unit tests",

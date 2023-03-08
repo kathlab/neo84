@@ -151,11 +151,15 @@ class Neo84_app():
         inf = []
 
         # set meta_data from task
-        self.__setup_inf.inf[si.Package.meta_data]['Author'] = self.task.author
-        self.__setup_inf.inf[si.Package.meta_data]['CreationDate'] = self.task.date
-        self.__setup_inf.inf[si.Package.meta_data]['Tested on'] = self.task.os
-        self.__setup_inf.inf[si.Package.meta_data]['Build'] = self.task.build
-        self.__setup_inf.inf[si.Package.meta_data]['Description'] = self.task.description
+        self.setup_inf.inf[si.Package.meta_data]['Author'] = self.task.author
+        self.setup_inf.inf[si.Package.meta_data]['CreationDate'] = self.task.date
+        self.setup_inf.inf[si.Package.meta_data]['Tested on'] = self.task.os
+        self.setup_inf.inf[si.Package.meta_data]['Build'] = self.task.build
+        self.setup_inf.inf[si.Package.meta_data]['Description'] = self.task.description
+        self.setup_inf.inf[si.Package.m42_app_constants]['ProductName'] = self.task.app
+        self.setup_inf.inf[si.Package.m42_app_constants]['DeveloperName'] = self.task.app_vendor
+        self.setup_inf.inf[si.Package.m42_app_constants]['Version'] = self.task.app_version
+        self.setup_inf.inf[si.Package.m42_app_constants]['Revision'] = self.task.build
 
         for package_section in range(0, 22):
             entries = self.setup_inf.inf[package_section]
