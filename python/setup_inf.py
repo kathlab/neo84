@@ -64,7 +64,7 @@ class Setup_inf():
         self.__setup = {
             '[Setup]': '',
             'Version': '14.2', # default 14.2
-            'ShowCaptions': '1', # default=1
+            'ShowCaption': '1', # default=1
             'BlockInput': '0', # disable user inputs, default=0
             'Platform': '*' # default=*
         }
@@ -98,7 +98,7 @@ class Setup_inf():
             'UninstallKeyName': r'Matrix42 - %DeveloperName% %ProductName% %Version%',
             'UninstallDisplayName': r'Matrix42 - %DeveloperName% %ProductName% %Version%',
             'UninstallString': '%ReinstallString% /U',
-            'ReinstallString': r'"%CommonSetupDir%\Setup.exe' '%App%\%SetupInfDir%\Setup.inf"',
+            'ReinstallString': r'"%CommonSetupDir%\Setup.exe" "%App%\%SetupInfDir%\Setup.inf"',
             '; UninstallDisplayIcon': r'"%ApplicationDir%\%SetupInfDir%\Setup.ico",0',
             'UninstallOptions': 'NOREMOVE NOREPAIR NOMODIFY',
             'ReinstallMode': '1',
@@ -131,7 +131,7 @@ class Setup_inf():
             'Disk1': 'Installationsmedium 1',
             'EndMessageDesc': 'Die Installation wurde erfolgreich abgeschlossen!',
             'ErrorLogMessage': 'Die Installation/Deinstallation wurde mit einer Fehlermeldung abgebrochen!',
-            'InstallationFor': 'Installation fuer:',
+            'InstallationFor': 'Installation für:',
             'InstallerDesc': 'Dienstprogramm zum Installieren einzelner Komponenten.',
             'InstallerName': 'Installationsprogramm',
             'SetupWizard': 'Installations-Assistent',

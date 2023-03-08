@@ -46,7 +46,7 @@ class Neo84_app():
             return key
 
         # everything else has a value
-        return str(key + ' = ' + value)
+        return str(key + '=' + value)
 
     def print_version(self):
         for line in self.logo:
@@ -243,13 +243,16 @@ class Neo84_app():
                 if (self.__is_in_filter(dirfile_filter.filter, base_path) == False):
                     continue
 
+                # make path windows compatible
+                base_path = base_path.replace('/', '\\')
+
                 # construct a file install entry
                 install_entry = '1:' + base_path + ','
                 install_entry = install_entry + ' ' * (196-len(install_entry))
-                install_entry = install_entry + 'C:/,'
-                install_entry = install_entry + ' ' * (50-len('C:/'))
+                install_entry = install_entry + 'C:\\,'
+                install_entry = install_entry + ' ' * (50-len('C:\\'))
                 install_entry = install_entry + 'CLIENT MACHINE,'
-                install_entry = install_entry + ' ' * (34-len('C:/'))
+                install_entry = install_entry + ' ' * (34-len('C:\\'))
                 install_entry = install_entry + str(getsize(join(root, file)))
                 self.__setup_inf.inf[si.Package.set_product][install_entry] = ''
 
