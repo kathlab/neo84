@@ -8,9 +8,10 @@
 
 # installation hints:
 # install android studio (no diff, default install)
-# run matrix42 pre diff
+# run Matrix42 pre diff
 # run android studio and install sdk to C:/ProgramData/AndroidSDK
-# run matrix24 post diff
+# run Matrix42 post diff
+# add driver file from System32/drivers/ to Diff per hand (missing file)
 
 # name of the application
 app: "Android Studio SDK and Emulator"
@@ -60,7 +61,8 @@ reg_filterlist:
 # you can add directories or files with complete path
 # empty directories are NOT copied NOR created!
 dir_file_filterlist:
+  - 'All Users/AndroidSDK'
   - 'Program Files/Intel/HAXM/checktool.exe'
   - 'Program Files/Intel/HAXM/IntelHaxm.sys'
   - 'ProgramData/AndroidSDK'
-  - 'All Users/AndroidSDK'
+  - 'Windows/System32/drivers/IntelHaxm.sys'
